@@ -146,5 +146,33 @@ module.exports = function(app, pool) {
 
     });
   });
+  app.put('/api/agenda/:id', (req, res) => {
+
+   const id = req.params.id;
+   const nome = req.body.nome;
+   const telefone = req.body.telefone;
+   const endereco = req.body.endereco;
+   const email = req.body.email;
+   const celular = req.body.celular;
+
+   pool.connect((err, client, release) => {
+     connectionError(err, res);
+
+     client.query('UPDATE contato set nome = $1, telefone = $2 endereco = $3, email = $4, celular = $5 where id = $6',
+     [nome,telefone,endereco,email,celular,id], (err, item) => {
+       release();
+       execute(err, res);
+       if (err) {
+         res.status(500).json(err);
+         return console.error('Erro executanto a consulta', err.stack);
+
+       } else {
+         res.status(200).json(item.rows);
+         return console.log(item.rowCount + ' registros retornados.');
+
+       }
+     });
+   });
+ });
 
 };
